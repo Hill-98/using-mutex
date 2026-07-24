@@ -26,7 +26,6 @@ Or any engine that supports resource management, `using` keyword and `AbortSigna
 
 ```javascript
 import { Mutex } from 'using-mutex'
-import { asyncWrapProviders } from 'node:async_hooks'
 
 const mutex = new Mutex()
 
