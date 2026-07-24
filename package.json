@@ -1,0 +1,45 @@
+{
+  "name": "using-mutex",
+  "version": "0.1.0",
+  "description": "A lightweight, zero-dependency, mutex with built-in pool and resource management.",
+  "keywords": [
+    "async",
+    "mutex",
+    "resource",
+    "using",
+    "lightweight"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/Hill-98/using-mutex",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hill-98/using-mutex.git"
+  },
+  "bugs": "https://github.com/Hill-98/using-mutex/issues",
+  "author": "Zhong Lufan <lufanzhong@gmail.com>",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.mjs"
+  },
+  "engines": {
+    "node": ">= 24.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "check": "biome check && tsc --noEmit",
+    "test": "node --test --experimental-test-coverage",
+    "prepare": "husky",
+    "prepublishOnly": "pnpm run check && pnpm run test && pnpm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.5",
+    "@types/node": "latest",
+    "husky": "^9.1.7",
+    "tsdown": "^0.22.13",
+    "typescript": "~7.0.2"
+  },
+  "types": "./dist/index.d.cts"
+}
