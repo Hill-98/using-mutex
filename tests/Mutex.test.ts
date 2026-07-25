@@ -22,7 +22,7 @@ test('Mutex test', async (t: TestContext) => {
   add()
   try {
     await add(10)
-    throw new Error('test error')
+    t.assert.ok(false)
   } catch (err: unknown) {
     t.assert.ok(err instanceof DOMException)
     t.assert.strictEqual(err.name, 'TimeoutError')
@@ -94,12 +94,14 @@ test('Mutex error test', async (t: TestContext) => {
   using _ = await mutex.acquire()
   try {
     await mutex.acquire(0)
+    t.assert.ok(false)
   } catch (err: unknown) {
     t.assert.ok(err instanceof MutexAcquireError)
     t.assert.strictEqual(err.message, 'Mutex is in use and cannot be acquired as there is no timeout.')
   }
   try {
     await mutex.acquire(-1)
+    t.assert.ok(false)
   } catch (err: unknown) {
     t.assert.ok(err instanceof RangeError)
     t.assert.strictEqual(err.message, 'timeout must be a positive number.')
