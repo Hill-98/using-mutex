@@ -1,5 +1,6 @@
 import type { TestContext } from 'node:test'
 import { test } from 'node:test'
+import { MutexAcquireError } from '../src/errors.ts'
 import { Mutex } from '../src/Mutex.ts'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -88,6 +89,37 @@ test('Mutex abort signal test', async (t: TestContext) => {
   t.assert.strictEqual(x, 1)
 })
 
+test('Mutex error test', async (t: TestContext) => {
+  const mutex = new Mutex()
+  using _ = await mutex.acquire()
+  try {
+    await mutex.acquire(0)
+  } catch (err: unknown) {
+    t.assert.ok(err instanceof MutexAcquireError)
+    t.assert.strictEqual(err.message, 'Mutex is in use and cannot be acquired as there is no timeout.')
+  }
+  try {
+    await mutex.acquire(-1)
+  } catch (err: unknown) {
+    t.assert.ok(err instanceof RangeError)
+    t.assert.strictEqual(err.message, 'timeout must be a positive number.')
+  }
+})
+
+test('Mutex many test', async (t: TestContext) => {
+  const mutex = new Mutex()
+  let x = 0
+  const add = async function add(sleepMs?: number, timeout?: number) {
+    using _ = await mutex.acquire(timeout)
+    if (sleepMs) {
+      await sleep(sleepMs)
+    }
+    x += 1
+  }
+  await Promise.allSettled([add(100), add(0, 10), add(200, 20), add(0, 200), add(0, 90)])
+  t.assert.strictEqual(x, 2)
+})
+
 test('MutexGuard key test ', async (t: TestContext) => {
   const mutex = new Mutex()
   const symbol = Symbol()
@@ -118,18 +150,4 @@ test('MutexGuard multiple release test ', async (t: TestContext) => {
   t.assert.strictEqual(x, 2)
   await sleep(100)
   t.assert.strictEqual(x, 3)
-})
-
-test('Mutex many test', async (t: TestContext) => {
-  const mutex = new Mutex()
-  let x = 0
-  const add = async function add(sleepMs?: number, timeout?: number) {
-    using _ = await mutex.acquire(timeout)
-    if (sleepMs) {
-      await sleep(sleepMs)
-    }
-    x += 1
-  }
-  await Promise.allSettled([add(100), add(0, 10), add(200, 20), add(0, 200), add(0, 90)])
-  t.assert.strictEqual(x, 2)
 })
