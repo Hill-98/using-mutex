@@ -7,7 +7,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 test('Mutex test', async (t: TestContext) => {
   const mutex = new Mutex()
   let x = 0
-  const add = async function add(timeout = 0) {
+  const add = async function add(timeout?: number) {
     using _ = await mutex.wait(timeout)
     await sleep(100)
     x += 1

@@ -19,13 +19,16 @@ export class Mutex {
       return new MutexGuard(this.#queues, k)
     }
     let signal = !hasKey && typeof timeout === 'undefined' ? key : timeout
+    if (typeof signal === 'number' && signal <= 0) {
+      throw new RangeError('timeout must be a positive number.')
+    }
     return new Promise<MutexGuard>((resolve, reject) => {
       if (isAbortSignal(signal) && signal.aborted) {
         reject(signal.reason ?? new Error('Abort'))
         return
       }
       if (typeof signal === 'number') {
-        signal = signal > 0 ? AbortSignal.timeout(signal) : undefined
+        signal = AbortSignal.timeout(signal)
       }
       queue.add(new Waiter(queue, resolve, reject, signal))
     })
