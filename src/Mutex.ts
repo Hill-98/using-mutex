@@ -6,10 +6,10 @@ export class Mutex {
   readonly #defaultKey = Symbol()
   readonly #queues: Map<string | symbol, Set<Waiter>> = new Map()
 
-  async wait(key?: string | symbol): Promise<MutexGuard>
-  async wait(timeout?: number | AbortSignal): Promise<MutexGuard>
-  async wait(key: string | symbol, timeout: number | AbortSignal): Promise<MutexGuard>
-  async wait(key?: string | symbol | number | AbortSignal, timeout?: number | AbortSignal): Promise<MutexGuard> {
+  async acquire(key?: string | symbol): Promise<MutexGuard>
+  async acquire(timeout?: number | AbortSignal): Promise<MutexGuard>
+  async acquire(key: string | symbol, timeout: number | AbortSignal): Promise<MutexGuard>
+  async acquire(key?: string | symbol | number | AbortSignal, timeout?: number | AbortSignal): Promise<MutexGuard> {
     const hasKey = typeof key === 'string' || typeof key === 'symbol'
     const k = hasKey ? key : this.#defaultKey
     let queue = this.#queues.get(k)

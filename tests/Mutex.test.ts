@@ -8,7 +8,7 @@ test('Mutex test', async (t: TestContext) => {
   const mutex = new Mutex()
   let x = 0
   const add = async function add(timeout?: number) {
-    using _ = await mutex.wait(timeout)
+    using _ = await mutex.acquire(timeout)
     await sleep(100)
     x += 1
   }
@@ -32,12 +32,12 @@ test('two Mutex test', async (t: TestContext) => {
   const mutex = new Mutex()
   let [x, y] = [0, 0]
   const addX = async function addX() {
-    using _ = await mutex.wait('x')
+    using _ = await mutex.acquire('x')
     await sleep(200)
     x += 1
   }
   const addY = async function addY() {
-    using _ = await mutex.wait('y')
+    using _ = await mutex.acquire('y')
     await sleep(200)
     y += 1
   }
@@ -52,7 +52,7 @@ test('Mutex abort signal test', async (t: TestContext) => {
   const mutex = new Mutex()
   let x = 0
   const add = async function add(signal?: AbortSignal) {
-    using _ = await mutex.wait('signal', signal as AbortSignal)
+    using _ = await mutex.acquire('signal', signal as AbortSignal)
     await sleep(100)
     x += 1
   }
@@ -91,7 +91,7 @@ test('Mutex abort signal test', async (t: TestContext) => {
 test('MutexGuard key test ', async (t: TestContext) => {
   const mutex = new Mutex()
   const symbol = Symbol()
-  using lock = await mutex.wait(symbol)
+  using lock = await mutex.acquire(symbol)
   t.assert.strictEqual(lock.key, symbol)
 })
 
@@ -99,7 +99,7 @@ test('MutexGuard multiple release test ', async (t: TestContext) => {
   const mutex = new Mutex()
   let x = 0
   const add = async function add() {
-    const lock = await mutex.wait()
+    const lock = await mutex.acquire()
     await sleep(100)
     x += 1
     lock.release()
