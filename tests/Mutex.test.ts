@@ -119,3 +119,17 @@ test('MutexGuard multiple release test ', async (t: TestContext) => {
   await sleep(100)
   t.assert.strictEqual(x, 3)
 })
+
+test('Mutex many test', async (t: TestContext) => {
+  const mutex = new Mutex()
+  let x = 0
+  const add = async function add(sleepMs?: number, timeout?: number) {
+    using _ = await mutex.acquire(timeout)
+    if (sleepMs) {
+      await sleep(sleepMs)
+    }
+    x += 1
+  }
+  await Promise.allSettled([add(100), add(0, 10), add(200, 20), add(0, 200), add(0, 90)])
+  t.assert.strictEqual(x, 2)
+})
