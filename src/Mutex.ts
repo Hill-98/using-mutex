@@ -1,3 +1,4 @@
+import { MutexAcquireError } from './errors.ts'
 import { MutexGuard } from './MutexGuard.ts'
 import { isAbortSignal } from './utils.ts'
 import { Waiter } from './Waiter.ts'
@@ -19,16 +20,19 @@ export class Mutex {
       return new MutexGuard(this.#queues, k)
     }
     let signal = !hasKey && typeof timeout === 'undefined' ? key : timeout
-    if (typeof signal === 'number' && signal <= 0) {
-      throw new RangeError('timeout must be a positive number.')
+    if (typeof signal === 'number') {
+      if (signal > 0) {
+        signal = AbortSignal.timeout(signal)
+      } else {
+        throw signal === 0
+          ? new MutexAcquireError('Mutex is in use and cannot be acquired as there is no timeout.')
+          : new RangeError('timeout must be a positive number.')
+      }
     }
     return new Promise<MutexGuard>((resolve, reject) => {
       if (isAbortSignal(signal) && signal.aborted) {
         reject(signal.reason ?? new Error('Abort'))
         return
-      }
-      if (typeof signal === 'number') {
-        signal = AbortSignal.timeout(signal)
       }
       queue.add(new Waiter(queue, resolve, reject, signal))
     })
