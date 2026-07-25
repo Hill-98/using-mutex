@@ -1,4 +1,5 @@
 import { MutexGuard } from './MutexGuard.ts'
+import { isAbortSignal } from './utils.ts'
 import { Waiter } from './Waiter.ts'
 
 export class Mutex {
@@ -19,7 +20,7 @@ export class Mutex {
     }
     let signal = !hasKey && typeof timeout === 'undefined' ? key : timeout
     return new Promise<MutexGuard>((resolve, reject) => {
-      if (signal instanceof AbortSignal && signal.aborted) {
+      if (isAbortSignal(signal) && signal.aborted) {
         reject(signal.reason ?? new Error('Abort'))
         return
       }
