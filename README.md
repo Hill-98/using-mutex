@@ -31,7 +31,7 @@ const mutex = new Mutex()
 
 async function doing() {
   // When the current scope ends, the lock is auto release.
-  using lock = await mutex.wait()
+  using lock = await mutex.acquire()
   //...
   // It can also be release manually.
   // lock.release()
@@ -43,7 +43,7 @@ doing()
 
 ## API
 
-### `Mutex.wait(key?: string | symbol, timeout?: number | AbortSignal): Promise<MutexGuard>`
+### `Mutex.acquire(key?: string | symbol, timeout?: number | AbortSignal): Promise<MutexGuard>`
 
 Acquires a lock for the specific `key`, returns an object that supports `Symbol.dispose`.
 
