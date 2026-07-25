@@ -1,6 +1,6 @@
 {
   "name": "using-mutex",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A lightweight, zero-dependency, mutex with built-in pool and resource management.",
   "keywords": [
     "async",
