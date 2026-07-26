@@ -31,7 +31,7 @@ export class Mutex {
     }
     return new Promise<MutexGuard>((resolve, reject) => {
       if (isAbortSignal(signal) && signal.aborted) {
-        reject(signal.reason ?? new Error('Abort'))
+        reject(signal.reason)
         return
       }
       queue.add(new Waiter(queue, resolve, reject, signal))

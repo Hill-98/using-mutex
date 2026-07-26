@@ -21,7 +21,7 @@ export class Waiter {
 
   #onAbort = () => {
     this.cleanup()
-    this.#reject(this.#signal?.reason ?? new Error('Abort'))
+    this.#reject(this.#signal?.reason)
   }
 
   cleanup(): void {
