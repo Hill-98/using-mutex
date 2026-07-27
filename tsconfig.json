@@ -7,10 +7,9 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "preserve",
+    "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
-    "lib": ["esnext"],
     "types": ["node"],
 
     // Other Outputs
@@ -37,7 +36,7 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "noUncheckedSideEffectImports": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
   },
   "include": [
     "src",
