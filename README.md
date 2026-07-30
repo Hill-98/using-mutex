@@ -47,4 +47,4 @@ doing()
 
 Acquires a lock for the specific `key`, returns an object that supports `Symbol.dispose`.
 
-`timeout`: A wait timeout duration or `AbortSignal` used to abort lock acquisition.
+`timeout`: A wait timeout duration (millisecond) or `AbortSignal` used to abort lock acquisition.

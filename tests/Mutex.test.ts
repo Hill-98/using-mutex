@@ -26,7 +26,7 @@ test('mutex acquire timeout test', async (t: TestContext) => {
   const mutex = new Mutex()
   let x = 0
   const add = async function add(timeout?: number) {
-    using _ = await mutex.acquire(timeout)
+    using _ = await mutex.acquire(timeout as number)
     await sleep(100)
     x += 1
   }
@@ -115,7 +115,7 @@ test('Mutex many test', async (t: TestContext) => {
   const mutex = new Mutex()
   let x = 0
   const add = async function add(sleepMs?: number, timeout?: number) {
-    using _ = await mutex.acquire(timeout)
+    using _ = await mutex.acquire(timeout as number)
     if (sleepMs) {
       await sleep(sleepMs)
     }

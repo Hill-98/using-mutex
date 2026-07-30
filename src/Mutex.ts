@@ -7,10 +7,13 @@ export class Mutex {
   readonly #defaultKey = Symbol()
   readonly #queues: Map<string | symbol, Set<Waiter>> = new Map()
 
-  async acquire(key?: string | symbol): Promise<MutexGuard>
-  async acquire(timeout?: number | AbortSignal): Promise<MutexGuard>
-  async acquire(key: string | symbol, timeout: number | AbortSignal): Promise<MutexGuard>
-  async acquire(key?: string | symbol | number | AbortSignal, timeout?: number | AbortSignal): Promise<MutexGuard> {
+  async acquire(): Promise<MutexGuard>
+  async acquire(key: string | symbol): Promise<MutexGuard>
+  async acquire(timeout: number): Promise<MutexGuard>
+  async acquire(signal: AbortSignal): Promise<MutexGuard>
+  async acquire(key: string | symbol, timeout: number): Promise<MutexGuard>
+  async acquire(key: string | symbol, signal: AbortSignal): Promise<MutexGuard>
+  async acquire(key?: string | symbol | number | AbortSignal, signal?: number | AbortSignal): Promise<MutexGuard> {
     const hasKey = typeof key === 'string' || typeof key === 'symbol'
     const k = hasKey ? key : this.#defaultKey
     let queue = this.#queues.get(k)
@@ -19,22 +22,22 @@ export class Mutex {
       this.#queues.set(k, queue)
       return new MutexGuard(this.#queues, k)
     }
-    let signal = !hasKey && typeof timeout === 'undefined' ? key : timeout
-    if (typeof signal === 'number') {
-      if (signal > 0) {
-        signal = AbortSignal.timeout(signal)
+    let s = !hasKey && typeof signal === 'undefined' ? key : signal
+    if (typeof s === 'number') {
+      if (s > 0) {
+        s = AbortSignal.timeout(s)
       } else {
-        throw signal === 0
+        throw s === 0
           ? new MutexAcquireError('Mutex is in use and cannot be acquired as there is no timeout.')
           : new RangeError('timeout must be a positive number.')
       }
     }
     return new Promise<MutexGuard>((resolve, reject) => {
-      if (isAbortSignal(signal) && signal.aborted) {
-        reject(signal.reason)
+      if (isAbortSignal(s) && s.aborted) {
+        reject(s.reason)
         return
       }
-      queue.add(new Waiter(queue, resolve, reject, signal))
+      queue.add(new Waiter(queue, resolve, reject, s))
     })
   }
 }
