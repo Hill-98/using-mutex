@@ -16,10 +16,9 @@ export class Mutex {
   async acquire(key?: string | symbol | number | AbortSignal, signal?: number | AbortSignal): Promise<MutexGuard> {
     const hasKey = typeof key === 'string' || typeof key === 'symbol'
     const k = hasKey ? key : this.#defaultKey
-    let queue = this.#queues.get(k)
+    const queue = this.#queues.get(k)
     if (!queue) {
-      queue = new Set()
-      this.#queues.set(k, queue)
+      this.#queues.set(k, new Set())
       return new MutexGuard(this.#queues, k)
     }
     let s = !hasKey && typeof signal === 'undefined' ? key : signal
